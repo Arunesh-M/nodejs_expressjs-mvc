@@ -1,6 +1,9 @@
 const express = require("express");
 const app = express();
 const path = require("path");
+
+const rootRoute = require("./routes/root");
+const employeesRoute = require("./routes/api/employees");
 const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
 const { logger } = require("./middleware/logEvents");
@@ -10,21 +13,17 @@ const PORT = process.env.PORT || 4444;
 // custom middleware logger
 app.use(logger);
 
-// Cross Origin Resource Sharing
+// Cross Origin Resource Sharing (3rd party)
 app.use(cors(corsOptions));
 
 // built-in middleware to handle urlencoded form data
 app.use(express.urlencoded({ extended: false }));
-
-// built-in middleware for json
 app.use(express.json());
-
-//serve static files
 app.use("/", express.static(path.join(__dirname, "/public")));
 
 // routes
-app.use("/", require("./routes/root"));
-app.use("/employees", require("./routes/api/employees"));
+app.use("/", rootRoute);
+app.use("/employees", employeesRoute);
 
 app.all("*", (req, res) => {
   res.status(404);
